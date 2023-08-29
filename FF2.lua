@@ -249,16 +249,28 @@ local section = column:Section({
    Title = "Adjustable Magnets"
 })
 
+section:TextLabel({
+   Text = "[V2] Mag Toggle Broke "
+})
+section:TextLabel({
+   Text = "Double Click Toggle to Work"
+})
+
+
+
+section:Divide({})
+
 
 section:Toggle({
    Text = "Lucid [V2] Magnets",
    State = false,
-   Callback = function(v)
+   Callback = function(v) 
+
 tooggleEnabled = v
 	while tooggleEnabled == true do
 		task.wait()
 		universalcatch()
-	end
+			end
 end,
  })
 
@@ -315,9 +327,6 @@ uniDelay = v
 local section = column:Section({
    Title = "Regular Magnets"
 })
-
-
-
 
 
 
