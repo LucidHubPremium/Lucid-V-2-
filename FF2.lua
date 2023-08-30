@@ -474,7 +474,7 @@ beam.Attachment0 = a0
 beam.Segments = 3000
 beam.Attachment1 = a1
 local data = {
-	Angle = 40,
+	Angle = 75,
 	Power = 0,
 	Direction = Vector3.new(0, 0, 0)
 }
@@ -532,7 +532,7 @@ local function findPossibleCatchers(power, direction)
 	for index, player in pairs(players:GetPlayers()) do
 		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 			local distance = (player.Character.HumanoidRootPart.Position - landing).Magnitude
-			if distance < (20 * airtime) + 5 then
+			if distance < (20 * airtime) + 25 then
 				catchers[#catchers + 1] = player
 			end
 		end
@@ -677,6 +677,14 @@ end
 		a0.CFrame = a0.Parent.CFrame:Inverse() * cf1
 		a1.CFrame = a1.Parent.CFrame:Inverse() * cf2
 		data.Direction = direction; data.Power = power
+					gui.Frame.PowerCard.Power.Text = power
+            gui.Frame.AngleCard.Angle.Text = data.Angle
+            gui.Frame.CatchableCard.Catchable.Text = (#catchers > 0 and "Yes") or "No"
+            gui.Frame.InterceptableCard.Interceptable.Text = (isInterceptable and "Yes") or "No"
+            gui.Frame.PassTypeCard.Type.Text = passType
+        else
+            gui.Enabled = false
+
 				end
 end
 end,
