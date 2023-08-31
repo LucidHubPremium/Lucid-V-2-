@@ -458,7 +458,6 @@ section:Button({
 local players = game:GetService("Players")
 local userInputService = game:GetService("UserInputService")
 local player = players.LocalPlayer
-local gui = game:GetObjects("rbxassetid://14089019919")[1]
 local mouse = loadstring(game:HttpGet("https://raw.githubusercontent.com/devdoroz/better-roblox-mouse/main/main.lua"))()
 local locked = false
 local enabled = true
@@ -475,24 +474,11 @@ beam.Attachment0 = a0
 beam.Segments = 3000
 beam.Attachment1 = a1
 local data = {
-	Angle = 40,
+	Angle = 69,
 	Power = 0,
 	Direction = Vector3.new(0, 0, 0)
 }
-local passTypeLeads = {
-        ["Dime"] = 1,
-        ["Jump"] = 6,
-        ["Mag"] = 12,
-        ["Slant"] = 3,
-    }
-    local passTypeSwitch = {
-        ["Dime"] = "Jump",
-        ["Jump"] = "Mag",
-        ["Mag"] = "Slant",
-        ["Slant"] = "Dime"
-    }
-    local passType = "Dime"
-			
+
 do -- mouse stuff
 	local whitelistedMousePart = Instance.new("Part")
 	whitelistedMousePart.Size = Vector3.new(2048, 1, 2048)
@@ -546,7 +532,7 @@ local function findPossibleCatchers(power, direction)
 	for index, player in pairs(players:GetPlayers()) do
 		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 			local distance = (player.Character.HumanoidRootPart.Position - landing).Magnitude
-			if distance < (20 * airtime) + 25 then
+			if distance < (1 * airtime) + 1 then
 				catchers[#catchers + 1] = player
 			end
 		end
@@ -633,12 +619,10 @@ userInputService.InputBegan:Connect(function(input, gp)
 			end
 		elseif input.KeyCode == Enum.KeyCode.Q then
 			locked = not locked
-		elseif input.KeyCode == Enum.KeyCode.Z then
-                passType = passTypeSwitch[passType]
-            end
-        end
-    end)
-			
+		end
+	end
+end)
+
 local function beamProjectile(g, v0, x0, t1)
 	local c = 0.5*0.5*0.5;
 	local p3 = 0.5*g*t1*t1 + v0*t1 + x0;
@@ -672,47 +656,29 @@ local function beamProjectile(g, v0, x0, t1)
 	return curve0, -curve1, cf1, cf2;
 end
 
-	gui.Enabled = false
-    gui.Parent = game:GetService("CoreGui"):FindFirstChild("RobloxGui")
-			
 			while true do
 	task.wait()
 	if not locked then
 		target = findTarget()
 	end
 	if target and enabled and player.PlayerGui:FindFirstChild("BallGui") and player.Character:FindFirstChild("Head") and target:FindFirstChild("HumanoidRootPart") then
-            gui.Enabled = true
-            local moveDirection = getMoveDirection(target)
-            local angleAddition = (moveDirection.Magnitude > 0 and 5) or 0
-            local leadDistance = passTypeLeads[passType]
-            local peakHeight = calculatePeakHeight(player.Character.Head.Position, target.HumanoidRootPart.Position + (moveDirection * leadDistance), data.Angle + angleAddition)
-            local t = calculateTimeToPeak(player.Character.Head.Position, target.HumanoidRootPart.Position + (moveDirection * leadDistance), peakHeight) or 0.5
-            local vel, direction, power = calculateVelocity(player.Character.Head.Position, target.HumanoidRootPart.Position + (moveDirection * 20 * t) + (moveDirection * leadDistance), t)
-            local catchers = findPossibleCatchers(power, direction)
-            local landing, airtime = calculateLanding(power, direction)
-            local c0, c1, cf1, cf2 = beamProjectile(Vector3.new(0, -28, 0), power * direction, player.Character.Head.Position + (direction * 5), airtime)
-            local isInterceptable = false
-            for index, catcher in pairs(catchers) do
-                local team = catcher.Team
-                if team ~= player.Team then
-                    isInterceptable = true
-                    break
-                end
-            end
-            part.Position = landing
-            beam.CurveSize0 = c0
-            beam.CurveSize1 = c1
-            a0.CFrame = a0.Parent.CFrame:Inverse() * cf1
-            a1.CFrame = a1.Parent.CFrame:Inverse() * cf2
-            data.Direction = direction; data.Power = power
-            gui.Frame.PowerCard.Power.Text = power
-            gui.Frame.AngleCard.Angle.Text = data.Angle
-            gui.Frame.PassTypeCard.Type.Text = passType
-        else
-            gui.Enabled = false
-
-        end
-    end
+		local lead = 12
+		local moveDirection = getMoveDirection(target)
+		local angleAddition = (moveDirection.Magnitude > 0 and 5) or 0
+		local peakHeight = calculatePeakHeight(player.Character.Head.Position, target.HumanoidRootPart.Position + moveDirection * lead, data.Angle + angleAddition)
+		local t = calculateTimeToPeak(player.Character.Head.Position, target.HumanoidRootPart.Position + moveDirection * lead, peakHeight) or 0.5
+		local vel, direction, power = calculateVelocity(player.Character.Head.Position, target.HumanoidRootPart.Position + (moveDirection * 20 * t) + (moveDirection * lead), t)
+		local catchers = findPossibleCatchers(power, direction)
+		local landing, airtime = calculateLanding(power, direction)
+		local c0, c1, cf1, cf2 = beamProjectile(Vector3.new(0, -28, 0), power * direction, player.Character.Head.Position + (direction * 5), airtime)
+		part.Position = landing
+		beam.CurveSize0 = c0
+		beam.CurveSize1 = c1
+		a0.CFrame = a0.Parent.CFrame:Inverse() * cf1
+		a1.CFrame = a1.Parent.CFrame:Inverse() * cf2
+		data.Direction = direction; data.Power = power
+				end
+end
 end,
 })
 
@@ -726,13 +692,35 @@ section:TextLabel({
    Text = "F or R to Adjust Angle"
 })
 
+local section = column:Section({
+   Title = "Configuration"
+})
+
+
+section:Divide({})
 
 
 
+section:TextLabel({
+   Text = "Beam [Angle 20]"
+})
+section:Divide({})
 
 
+section:TextLabel({
+   Text = "Mag [Angle 50]"
+})
+section:Divide({})
+
+section:TextLabel({
+   Text = "Dime [Angle 60]"
+})
+section:Divide({})
 
 
+section:TextLabel({
+   Text = "Lob Dime [Angle 95]"
+})
 
 
 
